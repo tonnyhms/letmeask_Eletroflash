@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import illustrationImg from '../assets/images/illustration.svg' //webpack -> Module Bundler -> converte o arquivo para formato aceitável
 import logoImg from '../assets/images/logo.svg'
 import eletroLogoImg from '../assets/images/logo-branca.png'
@@ -8,11 +8,12 @@ import '../styles/auth.scss'
 import { Button } from '../components/Button'
 import { userInfo } from 'os'
 import { banco } from '../services/firebase'
-//import { AuthContext } from '../contexts/AuthContext'
+import { useAuth } from '../hooks/useAuth'
+
 
 export const NewRoom = () => {
-  //const {user} = useContext(AuthContext);
-
+  const { user } = useAuth();
+  const history = useHistory(); 
   const [newRoom, setNewRoom] = useState('');
 
   async function handleCreateNewRoom(event: FormEvent){
@@ -24,7 +25,12 @@ export const NewRoom = () => {
 
     const roomRef = banco.ref('rooms');
 
-    const firebaseRoom = await roomRef.push()
+    const firebaseRoom = await roomRef.push({
+      title: newRoom,
+      authorId: user?.id,
+    })
+
+    history.push(`/rooms/${firebaseRoom.key}`)
   }
 
   return (

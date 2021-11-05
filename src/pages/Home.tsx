@@ -6,26 +6,43 @@ import eletroLogoImg from '../assets/images/logo-branca.png'
 import googleIconImg from '../assets/images/google-icon.svg'
 import '../styles/auth.scss'
 import { Button } from '../components/Button'
-import { firebase, authentication } from '../services/firebase'
-//import { AuthContext } from '../contexts/AuthContext'
+import { firebase, authentication, banco } from '../services/firebase'
 import { useAuth } from '../hooks/useAuth'
+import { FormEvent, useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 export const Home = () => {
   const history = useHistory();
   const {user, signInWithGoogle} = useAuth();
-
+  const [roomCode, setRoomCode] = useState('');
 
   async function handleCreateRoom() {
     if(!user){
       await signInWithGoogle();
     }
       history.push('/rooms/new');
-      console.log(user)
-    
+  }
+
+  async function handleJoinRoom(event: FormEvent ) {
+    event.preventDefault();
+
+    if(roomCode.trim() === ''){
+      return;
+    }
+
+    const roomRef = await banco.ref(`rooms/${roomCode}`).get();
+
+    if(!roomRef.exists()){
+      toast.error('A sala não existe. Faça o Login e crie sua sala.');
+      return;
+    }
+
+    history.push(`/rooms/${roomCode}`);
   }
 
   return (
     <div id="page-auth">
+      <Toaster/>
       <aside>
         <div id="images">
           <img src={eletroLogoImg} alt="ilustração Eletroflash" id="eletro-logo"/>
@@ -45,8 +62,13 @@ export const Home = () => {
           </button>
 
           <div className="separator">ou entre em uma Sala</div>
-          <form action="">
-            <input type="text" placeholder="Digite o código da sala"/>
+          <form onSubmit={handleJoinRoom}>
+            <input 
+              type="text" 
+              placeholder="Digite o código da sala"
+              onChange={event => setRoomCode(event.target.value)}  
+              value={roomCode}
+            />
             <Button type="submit">Entrar na sala</Button>
           </form>
         </div>
