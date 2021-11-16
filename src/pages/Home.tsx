@@ -37,6 +37,11 @@ export const Home = () => {
       return;
     }
 
+    if(roomRef.val().endedAt){
+      toast.error('A sala não existe mais. Esta sala foi fechada.');
+      return;
+    }
+
     history.push(`/rooms/${roomCode}`);
   }
 

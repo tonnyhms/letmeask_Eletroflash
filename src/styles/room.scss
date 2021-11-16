@@ -15,6 +15,17 @@
           max-height: 45px;
         }
       }
+
+      .buttons{
+        display: flex;
+        gap: 16px;
+        
+        button{
+          height: 40px;
+
+        }
+
+      }
       
     }
   }
@@ -99,6 +110,10 @@
       }
 
 
+    }
+
+    .question-list {
+      margin-top: 20px;
     }
   }
 }
